@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "omniauth-shipbob"
   spec.version       = Omniauth::Shipbob::VERSION
   spec.authors       = ["Venkata Kishor"]
-  spec.email         = ["kishor.venkat@getdropstream.com"]
+  spec.email         = ["kishore.venkat@getdropstream.com"]
 
   spec.summary       = %q{OmniAuth strategy for ShipBob}
   spec.description   = %q{In this gem you will find an OmniAuth ShipBob strategy}
