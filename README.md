@@ -20,8 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-
-````ruby
+```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :shipbob, 
               'client_id', 'client_secret',
@@ -29,6 +28,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
               :scope => 'orders_write products_read fulfillments_read inventory_read channels_read'              
 end
 ```
+
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
