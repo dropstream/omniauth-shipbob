@@ -28,7 +28,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
               :callback_url => "http://www.example.com/auth/skubana/callback",
               :scope => 'orders_write products_read fulfillments_read inventory_read channels_read'              
 end
-
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
