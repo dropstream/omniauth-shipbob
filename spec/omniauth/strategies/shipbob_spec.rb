@@ -10,11 +10,11 @@ RSpec.describe OmniAuth::Strategies::Shipbob do
     subject { strategy.new(app).options.client_options }
 
     it 'should have correct authorize url' do
-      expect(subject.authorize_url).to eq('/oauth/authorize')
+      expect(subject.authorize_url).to eq('/connect/authorize')
     end
 
     it 'should have correct token url' do
-      expect(subject.token_url).to eq('/oauth/access_token')
+      expect(subject.token_url).to eq('/connect/token')
     end
   end
 end
