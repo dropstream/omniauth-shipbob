@@ -20,8 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-
-````ruby
+```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :shipbob, 
               'client_id', 'client_secret',
