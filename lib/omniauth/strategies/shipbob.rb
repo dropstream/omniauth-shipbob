@@ -10,6 +10,13 @@ module OmniAuth
         :site => 'https://auth.shipbob.com'
       }
       
+      #option :provider_ignores_state, true
+      
+      def callback_phase
+        binding.pry
+        super
+      end
+      
     end
   end
 end
