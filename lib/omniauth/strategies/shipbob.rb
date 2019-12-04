@@ -5,7 +5,7 @@ module OmniAuth
     class Shipbob < OmniAuth::Strategies::OAuth2
     
       option :client_options, {
-        :authorize_url => '/connect/authorize',
+        :authorize_url => '/connect/integrate',
         :token_url => '/connect/token',
         :site => 'https://auth.shipbob.com'
       }
