@@ -23,12 +23,10 @@ Or install it yourself as:
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :shipbob,
-             'client_id', 'client_secret',
-             :callback_url => "#{Rails.env.production? ? 'https://app.getdropstream.com' : 'http://app.getdropstream.test'}/auth/shipbob/callback",
-             :scope => 'orders_write products_read fulfillments_read inventory_read channels_read offline_access',
-             :authorize_params => {:integration_name => 'DropStream', :response_mode => 'form_post' }, 
-             :setup => lambda { |env| params = Rack::Utils.parse_query(env['QUERY_STRING'])
-                                       env['omniauth.strategy'].options[:client_options][:site] = "https://auth.shipbob.com" }
+         'client_id', 'client_secret',
+         :callback_url => "#{Rails.env.production? ? 'https://example.com' : 'http://example.test'}/auth/shipbob/callback",
+         :scope => 'scopes-list',
+         :authorize_params => {:integration_name => 'DropStream', :response_mode => 'form_post' }
 end
 ```
 
