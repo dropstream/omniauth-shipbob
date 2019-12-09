@@ -24,9 +24,9 @@ Or install it yourself as:
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :shipbob,
          'client_id', 'client_secret',
-         :callback_url => "#{Rails.env.production? ? 'https://example.com' : 'http://example.test'}/auth/shipbob/callback",
+         :callback_url => 'http://example.test/auth/shipbob/callback',
          :scope => 'scopes-list',
-         :authorize_params => {:integration_name => 'DropStream', :response_mode => 'form_post' }
+         :authorize_params => {:integration_name => 'my-application-name', :response_mode => 'form_post' }
 end
 ```
 
