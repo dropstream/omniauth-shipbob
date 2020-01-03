@@ -1,15 +1,18 @@
+
 require 'omniauth-oauth2'
 require 'json'
 
 module OmniAuth
   module Strategies
     class Shipbob < OmniAuth::Strategies::OAuth2
-    
+
       option :client_options, {
         :authorize_url => '/connect/integrate',
         :token_url => '/connect/token',
         :site => 'https://auth.shipbob.com'
       }
+      
+      option :authorize_params, { :response_mode => 'form_post' }
       
       credentials do
         hash = {"token" => access_token.token}

@@ -25,10 +25,24 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :shipbob,
          'client_id', 'client_secret',
          :callback_url => 'http://example.test/auth/shipbob/callback',
-         :scope => 'scopes-list',
-         :authorize_params => {:integration_name => 'my-application-name', :response_mode => 'form_post' }
+         :scope => 'scopes-list'
 end
 ```
+
+## Configuring
+
+You can configure integration_name through the authorize_params hash:
+
+```ruby
+  Rails.application.config.middleware.use OmniAuth::Builder do
+    provider :shipbob,
+           'client_id', 'client_secret',
+           :callback_url => 'http://example.test/auth/shipbob/callback',
+           :scope => 'scopes-list',
+           :authorize_params => {:integration_name => 'my-application-name' }
+end
+```
+
 
 ## Development
 
