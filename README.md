@@ -22,12 +22,27 @@ Or install it yourself as:
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :shipbob, 
-              'client_id', 'client_secret',
-              :callback_url => "http://www.example.com/auth/skubana/callback",
-              :scope => 'orders_write products_read fulfillments_read inventory_read channels_read'              
+  provider :shipbob,
+         'client_id', 'client_secret',
+         :callback_url => 'http://example.test/auth/shipbob/callback',
+         :scope => 'scopes-list'
 end
 ```
+
+## Configuring
+
+You can configure integration_name through the authorize_params hash:
+
+```ruby
+  Rails.application.config.middleware.use OmniAuth::Builder do
+    provider :shipbob,
+           'client_id', 'client_secret',
+           :callback_url => 'http://example.test/auth/shipbob/callback',
+           :scope => 'scopes-list',
+           :authorize_params => {:integration_name => 'my-application-name' }
+end
+```
+
 
 ## Development
 
