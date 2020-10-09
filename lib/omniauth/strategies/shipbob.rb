@@ -31,6 +31,11 @@ module OmniAuth
         nil  
       end
       
+      # override callback_url to avoid sending query params along with specified redirect_uri
+      def callback_url
+        full_host + script_name + callback_path
+      end
+      
     end
   end
 end
