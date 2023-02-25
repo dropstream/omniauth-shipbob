@@ -43,6 +43,21 @@ You can configure integration_name through the authorize_params hash:
 end
 ```
 
+### Configure for Sandbox ENV
+
+Configure these options to use ShipBob's [sandbox](https://developer.shipbob.com/sandbox-simulations) environment.
+
+```ruby
+  Rails.application.config.middleware.use OmniAuth::Builder do
+    provider :shipbob,
+           ...,
+           api_url: 'https://sandbox-api.shipbob.com/2.0',
+           client_options: {
+             site: 'https://authstage.shipbob.com'
+           },
+end
+```
+
 
 ## Development
 
