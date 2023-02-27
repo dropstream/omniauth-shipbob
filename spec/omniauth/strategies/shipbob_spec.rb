@@ -17,4 +17,22 @@ RSpec.describe OmniAuth::Strategies::Shipbob do
       expect(subject.token_url).to eq('/connect/token')
     end
   end
+
+  describe '#options' do
+    subject { strategy.new(app).options }
+
+    it 'should have default api_url' do
+      expect(subject.api_url).to eq('https://api.shipbob.com/1.0')
+    end
+
+    context 'when api_url is set' do
+      let(:staging_api_url) { 'https://example.com/1.0' }
+
+      subject { strategy.new(app, { api_url: staging_api_url }).options }
+  
+      it 'should have correct api_url' do
+        expect(subject.api_url).to eq(staging_api_url)
+      end
+    end
+  end
 end

@@ -13,6 +13,7 @@ module OmniAuth
       }
       
       option :authorize_params, { :response_mode => 'form_post' }
+      option :api_url, 'https://api.shipbob.com/1.0'
       
       credentials do
         hash = {"token" => access_token.token}
@@ -25,7 +26,7 @@ module OmniAuth
       
       def get_channel_id(token)
         log :info, 'Calling API to get Channel Id.'
-        response = token.get('https://api.shipbob.com/1.0/channel', :headers => { 'Content-Type' => 'application/json' })
+        response = token.get("#{options.api_url}/channel", :headers => { 'Content-Type' => 'application/json' })
         JSON.parse(response.body).dig(0, "id")
       rescue => e
         nil  
