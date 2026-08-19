@@ -1,0 +1,77 @@
+name: Release
+
+# Cut a release by bumping lib/omniauth-shipbob/version.rb, committing, then:
+#   git tag -a v0.1.0 -m "v0.1.0" && git push origin master --tags
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  # Never publish a version that has not passed the matrix.
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  push:
+    name: Push gem to RubyGems.org
+    needs: test
+    runs-on: ubuntu-latest
+
+    # Publishing uses RubyGems trusted publishing (OIDC), so there is no API key
+    # secret to rotate and it works with the gemspec's `rubygems_mfa_required`.
+    #
+    # One-time setup on rubygems.org: open the gem -> "Trusted publishers" ->
+    # "Create", with owner `dropstream`, repository `omniauth-shipbob`,
+    # workflow `release.yml`, and environment `release`.
+    environment: release
+
+    permissions:
+      id-token: write # mandatory for trusted publishing
+      contents: write # `rake release` pushes the tag; `gh` creates the release
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # rubygems/release-gem installs its own short-lived git credentials.
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      # `rake release` builds whatever version.rb says, regardless of the tag. If the
+      # two disagree it would publish one version and tag another, so stop here first.
+      - name: Verify the tag matches the gem version
+        run: |
+          gem_version="$(ruby -r./lib/omniauth-shipbob/version -e 'print Omniauth::Shipbob::VERSION')"
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [ "$gem_version" != "$tag_version" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match lib/omniauth-shipbob/version.rb (${gem_version})."
+            exit 1
+          fi
+          echo "Releasing omniauth-shipbob ${gem_version}"
+
+      # Builds the gem and runs `gem push` against the gemspec's allowed_push_host.
+      # The tag already exists, so bundler skips its own tag-and-push step.
+      - name: Push to RubyGems.org
+        uses: rubygems/release-gem@v1
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="$(awk -v v="${GITHUB_REF_NAME#v}" '
+            $0 ~ "^## \\[" v "\\]" { flag = 1; next }
+            flag && /^## \[/ { exit }
+            flag { print }
+          ' CHANGELOG.md)"
+
+          if [ -n "$(printf '%s' "$notes" | tr -d '[:space:]')" ]; then
+            printf '%s\n' "$notes" > release-notes.md
+            gh release create "$GITHUB_REF_NAME" --verify-tag \
+              --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+          else
+            echo "No CHANGELOG.md section for ${GITHUB_REF_NAME}; generating notes from commits."
+            gh release create "$GITHUB_REF_NAME" --verify-tag \
+              --title "$GITHUB_REF_NAME" --generate-notes
+          fi
