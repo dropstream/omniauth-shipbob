@@ -82,30 +82,32 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Releasing
 
-Releases are cut by pushing a tag; GitHub Actions builds and publishes the gem to
-[rubygems.org](https://rubygems.org) via
+Releases are cut from the [GitHub Releases UI](https://github.com/dropstream/omniauth-shipbob/releases/new);
+GitHub Actions builds and publishes the gem to [rubygems.org](https://rubygems.org) via
 [RubyGems trusted publishing](https://guides.rubygems.org/trusted-publishing/), so no API
 key is stored in the repo and the gemspec can keep `rubygems_mfa_required`.
 
 1. Bump `VERSION` in `lib/omniauth-shipbob/version.rb` and add a `CHANGELOG.md` section
-   for it (the release notes are taken from that section).
-2. Commit both on `master`.
-3. Tag and push:
+   for it, along with a link definition for the new heading at the bottom of that file.
+   Commit both on `master`.
+2. Draft a new release with the target set to `master` and the tag set to the version
+   prefixed with `v` — `v0.1.0`, not `0.1.0`. The prefix is stripped before comparing
+   against `version.rb`; the gem version itself carries no `v`.
+3. Click **Generate release notes** — the preferred method — then publish. The generated
+   notes list the merged pull requests; `CHANGELOG.md` carries the curated prose and
+   links back to each release.
 
-   ```sh
-   git tag -a v0.1.0 -m "v0.1.0"
-   git push origin master --tags
-   ```
-
-The `Release` workflow then runs the full test matrix, refuses to continue if the tag and
-`version.rb` disagree, pushes the gem, and opens a GitHub release.
+Publishing creates the tag, which fires the `Release` workflow: it reruns the full test
+matrix, refuses to continue if the tag and `version.rb` disagree, and pushes the gem.
+Note that RubyGems versions are immutable — a bad release can be yanked, never replaced,
+so the version bump has to be committed before the release is published.
 
 ### One-time RubyGems setup
 
-Before the first automated release, register this repo as a trusted publisher: on
-rubygems.org open the gem → **Trusted publishers** → **Create**, with owner
-`dropstream`, repository `omniauth-shipbob`, workflow `release.yml`, and environment
-`release`.
+Already configured, and only needed again if the gem is renamed or moved: on rubygems.org
+open the gem -> **Trusted publishers** -> **Create**, with owner `dropstream`, repository
+`omniauth-shipbob`, workflow `release.yml`, and environment `release`. The repo also needs
+an environment named `release`.
 
 ## Contributing
 

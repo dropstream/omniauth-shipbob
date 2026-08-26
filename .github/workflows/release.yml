@@ -1,10 +1,11 @@
 name: Release
 
-# Cut a release by bumping lib/omniauth-shipbob/version.rb, committing, then:
-#   git tag -a v0.1.0 -m "v0.1.0" && git push origin master --tags
+# Cut a release from the GitHub Releases UI: draft a release, set the tag to `vX.Y.Z`
+# (matching lib/omniauth-shipbob/version.rb), and publish it. GitHub creates the tag,
+# which fires this workflow.
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
 
 jobs:
   # Never publish a version that has not passed the matrix.
@@ -26,11 +27,14 @@ jobs:
 
     permissions:
       id-token: write # mandatory for trusted publishing
-      contents: write # `rake release` pushes the tag; `gh` creates the release
+      # GitHub already created the release and its tag, so nothing here writes to
+      # the repo: `rake release` sees the tag and skips its own tag-and-push step.
+      contents: read
 
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: ${{ github.event.release.tag_name }}
           # rubygems/release-gem installs its own short-lived git credentials.
           persist-credentials: false
 
@@ -40,38 +44,20 @@ jobs:
           bundler-cache: true
 
       # `rake release` builds whatever version.rb says, regardless of the tag. If the
-      # two disagree it would publish one version and tag another, so stop here first.
-      - name: Verify the tag matches the gem version
+      # two disagree it would publish one version under another version's release, so
+      # stop here first.
+      - name: Verify the release tag matches the gem version
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           gem_version="$(ruby -r./lib/omniauth-shipbob/version -e 'print Omniauth::Shipbob::VERSION')"
-          tag_version="${GITHUB_REF_NAME#v}"
+          tag_version="${TAG_NAME#v}"
           if [ "$gem_version" != "$tag_version" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match lib/omniauth-shipbob/version.rb (${gem_version})."
+            echo "::error::Release tag ${TAG_NAME} does not match lib/omniauth-shipbob/version.rb (${gem_version})."
             exit 1
           fi
           echo "Releasing omniauth-shipbob ${gem_version}"
 
       # Builds the gem and runs `gem push` against the gemspec's allowed_push_host.
-      # The tag already exists, so bundler skips its own tag-and-push step.
       - name: Push to RubyGems.org
         uses: rubygems/release-gem@v1
-
-      - name: Create the GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          notes="$(awk -v v="${GITHUB_REF_NAME#v}" '
-            $0 ~ "^## \\[" v "\\]" { flag = 1; next }
-            flag && /^## \[/ { exit }
-            flag { print }
-          ' CHANGELOG.md)"
-
-          if [ -n "$(printf '%s' "$notes" | tr -d '[:space:]')" ]; then
-            printf '%s\n' "$notes" > release-notes.md
-            gh release create "$GITHUB_REF_NAME" --verify-tag \
-              --title "$GITHUB_REF_NAME" --notes-file release-notes.md
-          else
-            echo "No CHANGELOG.md section for ${GITHUB_REF_NAME}; generating notes from commits."
-            gh release create "$GITHUB_REF_NAME" --verify-tag \
-              --title "$GITHUB_REF_NAME" --generate-notes
-          fi
