@@ -1,8 +1,21 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
+All notable changes to this project are documented in this file. Each version heading
+links to its [GitHub release](https://github.com/dropstream/omniauth-shipbob/releases),
+where the notes are generated from the merged pull requests.
 
-## [0.1.0] - 2026-08-19
+## [Unreleased]
+
+### Changed
+
+- Releases are now cut by publishing a release from the GitHub Releases UI instead of by
+  pushing a tag from the command line. The `Release` workflow triggers on
+  `release: published` and no longer creates the GitHub release itself, which previously
+  failed with `Release.tag_name already exists` when the release came from the UI.
+  Release notes are now produced by **Generate release notes** in the UI rather than
+  extracted from this file; this file links to each release instead.
+
+## [0.1.0] - 2026-08-26
 
 ### Changed
 
@@ -46,3 +59,8 @@ All notable changes to this project are documented in this file.
 ## [0.0.2]
 
 - Initial published strategy.
+
+[Unreleased]: https://github.com/dropstream/omniauth-shipbob/compare/v0.1.0...master
+[0.1.0]: https://github.com/dropstream/omniauth-shipbob/releases/tag/v0.1.0
+[0.0.3]: https://github.com/dropstream/omniauth-shipbob/releases/tag/v0.0.3
+[0.0.2]: https://github.com/dropstream/omniauth-shipbob/releases/tag/v0.0.2
